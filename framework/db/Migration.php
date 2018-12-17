@@ -509,6 +509,33 @@ class Migration extends Component implements MigrationInterface
     }
 
     /**
+    * Builds and executes a SQL statement for creating a new unique constraint on table.
+    * @param string $name the name of the unique constraint.
+    * @param string $table the name of the table to apply constraint unique.
+    * @param string|array $colums the colum(s) that should be included in the constraint. 
+    * @author Eloy Gonzalez 
+    */
+    public function createUniqueConstraint($name, $table, $columns)
+    {
+        $time = $this->beginCommand('create ' . " unique constraint $name on $table (" . implode(',', (array) $columns) . ')');
+        $this->db->createCommand()->addUnique($name, $table, $columns)->execute();
+        $this->endCommand($time);
+    }
+
+    /**
+    * Builds and executes a SQL statement for dropping an unique constraint on the table.
+    * @param string $name the name of the unique constraint to be dropped.
+    * @param string $table the name of the table whose constraint to be dropped.
+    * @author Eloy Gonzalez 
+    */
+    public function dropUniqueConstraint($name, $table)
+    {
+        $time = $this->beginCommand("drop constraint $name on $table");
+        $this->db->createCommand()->dropUnique($name, $table)->execute();
+        $this->endCommand($time);
+    }
+
+    /**
      * Builds and execute a SQL statement for adding comment to column.
      *
      * @param string $table the table whose column is to be commented. The table name will be properly quoted by the method.
